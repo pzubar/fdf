@@ -62,16 +62,46 @@
     map.map((row, rowIndex) => {
         row.map((dot, dotIndex) => {
             stars.push({
-                x: rowIndex * scale,
-                y: dotIndex * scale,
+                x: rowIndex,
+                y: dotIndex,
+                z: dot,
                 radius: Math.random() * 1 + 1,
             })
         })
     });
 
-    function orthographicProjection() {
-
+     function scaleDot(item) {
+        item.x *= scale;
+        item.y *= scale;
+        item.z *= scale;
     }
+
+    function orthographicProjection() {
+        let x0, y0, z0;
+        let x1, y1, z1;
+        let x2, y2;
+
+        stars.map((dot) => {
+            scaleDot(dot);
+            const {x, y, z} = dot;
+
+            x0 = x;
+            y0 = y * Math.cos(rotateX) + z * Math.sin(rotateX);
+            z0 = z * Math.cos(rotateX) - y * Math.sin(rotateX);
+
+            x1 = x0 * Math.cos(rotateY) - z0 * Math.sin(rotateY);
+            y1 = y0;
+            z1 = z0 * Math.cos(rotateY) + x0 * Math.sin(rotateY);
+
+            x2 = x1 * Math.cos(rotateZ) + y1 * Math.sin(rotateZ);
+            y2 = y1 * Math.cos(rotateZ) + x1 * Math.sin(rotateZ);
+
+            dot.x = x2;
+            dot.y = y2;
+        })
+    }
+
+    orthographicProjection();
 
     // Draw the scene
 
